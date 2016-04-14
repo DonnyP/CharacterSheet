@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
+using System.Xml;
 
 namespace CharacterSheet
 {
@@ -14,14 +15,14 @@ namespace CharacterSheet
     {
         int dexterity, strength, health, points;
         string heroClass, name, perk;
-        
+
         public CreateForm()
         {
             InitializeComponent();
             dexterity = strength = health = points = 5;
         }
 
-        
+
         #region character class
 
         private void mageButton_Click(object sender, EventArgs e)
@@ -160,6 +161,37 @@ namespace CharacterSheet
             Close();
         }
 
+        private void CreateForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            XmlTextWriter writer = new XmlTextWriter("characters.xml", null);
+
+            //Writer the "Character" element
+            writer.WriteStartElement("character");
+
+            for (int i = 0; i < MainForm.characterDB.Count(); i++)
+            {
+                //Start "character" element
+                writer.WriteStartElement("character");
+
+                //Write sub-elements
+                writer.WriteElementString("name", MainForm.characterDB[i].name);
+                writer.WriteElementString("class", MainForm.characterDB[i].charClass);
+                writer.WriteElementString("dex", MainForm.characterDB[i].dexterity);
+                writer.WriteElementString("str", MainForm.characterDB[i].strength);
+                writer.WriteElementString("hea", MainForm.characterDB[i].health);
+                writer.WriteElementString("perk", MainForm.characterDB[i].perk);
+                //end the "character" element
+                writer.WriteEndElement();
+            }
+
+            //Write the XML to file and close the writer
+            writer.Close();
+        }
+
+        private void CreateForm_Load(object sender, EventArgs e)
+        {
+
+        }
         private void cancelButton_Click(object sender, EventArgs e)
         {
             Close();
